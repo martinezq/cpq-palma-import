@@ -62,7 +62,7 @@ async function processRequest(inputData, endpoint, authorization, job) {
 
   job.log.push(`creating/updating modules (${result.modules.length})`);
   const modulesSorted = R.sortBy(m => -m.variants.length, result.modules);
-  const moduleParts = R.splitEvery(200, modulesSorted);
+  const moduleParts = R.splitEvery(20, modulesSorted);
 
   for (const modules of moduleParts) {
     await client.createModules({ modules });

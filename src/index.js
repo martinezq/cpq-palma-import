@@ -9,6 +9,7 @@ const { readInput } = require('./input');
 const { palmaToTacton } = require('./mappers/mapper');
 
 const GRAPHQL_SERVER_URL = 'https://cpq-graphql-server.herokuapp.com/promo/';
+// const GRAPHQL_SERVER_URL = 'http://localhost:4000/promo/';
 const port = process.env.PORT || 3000;
 
 let jobs = {};
@@ -60,7 +61,8 @@ async function processRequest(inputData, endpoint, authorization, job) {
   await client.createGlobalFeatures(result);
 
   job.log.push(`creating/updating modules (${result.modules.length})`);
-  const moduleParts = R.splitEvery(20, result.modules);
+  const modulesSorted = R.sortBy(m => -m.variants.length, result.modules);
+  const moduleParts = R.splitEvery(200, modulesSorted);
 
   for (const modules of moduleParts) {
     await client.createModules({ modules });

@@ -2,6 +2,7 @@ const R = require('ramda');
 const express = require('express');
 const multer = require('multer');
 const fs = require('fs');
+const { v4: uuidv4 } = require('uuid');
 
 const { createClient } = require('./client');
 const { readInput } = require('./input');
@@ -9,6 +10,8 @@ const { palmaToTacton } = require('./mappers/mapper');
 
 const GRAPHQL_SERVER_URL = 'https://cpq-graphql-server.herokuapp.com/promo/';
 const port = process.env.PORT || 3000;
+
+let jobs = {};
 
 // ----------------------------------------------------------------------------
 
@@ -41,22 +44,32 @@ function checks(result) {
   return report;
 }
 
-async function processRequest(inputData, endpoint, authorization) {
+async function processRequest(inputData, endpoint, authorization, job) {
+  job.log = [];
+  job.log.push('reading input data');
   let result = palmaToTacton(inputData);
   const client = createClient(endpoint, authorization);
 
+  job.log.push(`creating/updating domains (${result.domains.length})`);
   await client.createDomains(result);
+
+  job.log.push(`creating/updating categories (${result.categories.length})`);
   await client.createAttributeCategories(result);
+
+  job.log.push(`creating/updating global features (${result.globalFeatures.length})`);
   await client.createGlobalFeatures(result);
 
+  job.log.push(`creating/updating modules (${result.modules.length})`);
   const moduleParts = R.splitEvery(50, result.modules);
 
   for (const modules of moduleParts) {
     await client.createModules({ modules });
   }
 
-  ;
+  job.log.push(`creating/updating assemblies (${result.assemblies.length})`);
   await client.createAssemblies(result);
+
+  job.log.push(`DONE`);
 
   return result;
 }
@@ -66,6 +79,13 @@ async function server() {
   const app = express();
 
   const upload = multer({ storage: multer.memoryStorage() });
+
+  app.use(express.static('public'))
+
+  app.get('/palma/import/:job', (req, res) => {
+    const jobId = req.params.job;
+    res.send(jobs[jobId] || 'No such job');
+  });
 
   app.post('/palma/import', upload.single('file'), async (req, res) => {
     const authorization = req.headers['authorization'];
@@ -85,6 +105,8 @@ async function server() {
 
     const baseUrlPure = baseUrl.replace(/^https?:\/\//, '');
 
+    const jobId = uuidv4();
+
     try {
       const endpoint = `${GRAPHQL_SERVER_URL}/${baseUrlPure}/${ticket}`;
       const jsonData = JSON.parse(req.file.buffer.toString());
@@ -93,11 +115,24 @@ async function server() {
       console.log(`baseUrl: ${baseUrl}`);
       console.log(`ticket: ${ticket}`);
 
-      const result = await processRequest(jsonData, endpoint, authorization);
+      jobs[jobId] = {
+        startedAt: new Date(),
+        status: "in progress"
+      }
 
-      res.send(result);
+      res.send({ jobId });
+
+      await processRequest(jsonData, endpoint, authorization, jobs[jobId]);
+
+      jobs[jobId].status = "completed";
+      jobs[jobId].completedAt = new Date();
+
     } catch (error) {
-      return res.status(400).send('Invalid JSON file');
+      console.log(error);
+
+      jobs[jobId].status = "error";
+      jobs[jobId].error = error?.response?.errors || error;
+      
     }
   });
 

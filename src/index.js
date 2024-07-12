@@ -60,7 +60,7 @@ async function processRequest(inputData, endpoint, authorization, job) {
   await client.createGlobalFeatures(result);
 
   job.log.push(`creating/updating modules (${result.modules.length})`);
-  const moduleParts = R.splitEvery(50, result.modules);
+  const moduleParts = R.splitEvery(20, result.modules);
 
   for (const modules of moduleParts) {
     await client.createModules({ modules });

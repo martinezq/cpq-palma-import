@@ -1,0 +1,19 @@
+{
+  "name": "cpq-palma-import",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "server": "node src/index.js",
+    "nodemon": "nodemon src/index.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "graphql": "^16.9.0",
+    "graphql-request": "^4.3.0",
+    "multer": "^1.4.5-lts.1",
+    "ramda": "^0.30.1"
+  }
+}

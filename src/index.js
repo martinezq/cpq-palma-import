@@ -8,6 +8,7 @@ const { readInput } = require('./input');
 const { palmaToTacton } = require('./mappers/mapper');
 
 const GRAPHQL_SERVER_URL = 'https://cpq-graphql-server.herokuapp.com/promo/';
+const port = process.env.PORT || 3000;
 
 // ----------------------------------------------------------------------------
 
@@ -40,7 +41,7 @@ function checks(result) {
   return report;
 }
 
-async function process(inputData, endpoint, authorization) {
+async function processRequest(inputData, endpoint, authorization) {
   let result = palmaToTacton(inputData);
   const client = createClient(endpoint, authorization);
 
@@ -63,7 +64,6 @@ async function process(inputData, endpoint, authorization) {
 async function server() {
 
   const app = express();
-  const port = process.env?.PORT || 3000;
 
   const upload = multer({ storage: multer.memoryStorage() });
 
@@ -93,7 +93,7 @@ async function server() {
       console.log(`baseUrl: ${baseUrl}`);
       console.log(`ticket: ${ticket}`);
 
-      const result = await process(jsonData, endpoint, authorization);
+      const result = await processRequest(jsonData, endpoint, authorization);
 
       res.send(result);
     } catch (error) {

@@ -15,7 +15,9 @@ const {
     featureName,
     variantName,
     assemblyName,
+    assemblyNameFromNode,
     positionName,
+    positionNameFromNode,
     assemblyToPositionName,
     attributeName,
     attributeCategoryName,
@@ -51,7 +53,7 @@ function extractAssemblies(input) {
         // console.log(node.name);
 
         return {
-            name: assemblyName(node.name),
+            name: assemblyNameFromNode(node),
             description: node.name,
             attributes: extractAttributes(node),
             positions: extractPositions(node),
@@ -97,10 +99,10 @@ function extractAssemblies(input) {
         const positionNodes = node.nodes?.filter(isPositionNode) || [];
 
         return positionNodes.map(pn => ({
-            name: positionName(pn.name),
+            name: positionNameFromNode(pn),
             description: pn.name,
             module: isModulePositionNode(pn) ? { name: moduleName(pn.realizationName)} : undefined,
-            assembly: isAssemblyPositionNode(pn) ? { name: assemblyName(pn.name)} : undefined,
+            assembly: isAssemblyPositionNode(pn) ? { name: assemblyNameFromNode(pn)} : undefined,
             qtyMin: extractPositionMinQty(pn),
             qtyMax: extractPositionMaxQty(pn)
         }));
@@ -167,7 +169,7 @@ function extractAssemblies(input) {
                     io: property.unifier,
                     aggregationStrategy: 'Equal',
                     aggregateList: aggregatedModulePositionNodes.map(modulePositionNode => ({
-                        position: { name: positionName(modulePositionNode.name) },
+                        position: { name: positionNameFromNode(modulePositionNode) },
                         feature: { name: featureName(property.name) }
                     })),
                     category: { name: technical_attribute_category_name }
@@ -355,7 +357,7 @@ function extractAssemblies(input) {
                     let name;
                     
                     if (isModuleFeature) {
-                        name = positionName(node.name) + '.' + featureName(property.name);
+                        name = positionNameFromNode(node) + '.' + featureName(property.name);
                     } else {
                         name = attributeName(property.name);
                     }
@@ -366,11 +368,11 @@ function extractAssemblies(input) {
                     
                 })?.join(' and ');
             
-            return conditions ? `(${prune_attribute_name} in {No} and ${conditions})->${positionName(node.name)}.qty=${c.quantity}` : undefined;
+            return conditions ? `(${prune_attribute_name} in {No} and ${conditions})->${positionNameFromNode(node)}.qty=${c.quantity}` : undefined;
         }
     
         function buildConstraintForNoneVariant(node) {
-            const name = positionName(node.name);
+            const name = positionNameFromNode(node);
             return `${name}.variant in {none}<->${name}.qty=0`;
         }
     
@@ -381,7 +383,7 @@ function extractAssemblies(input) {
                 throw `Can't find qty variable property: ${node.propertyUid}`;
             }
     
-            return `${positionName(node.name)}.qty=0 or ${positionName(node.name)}.qty=${attributeName(qtyProperty.name)}.number`;
+            return `${positionNameFromNode(node)}.qty=0 or ${positionNameFromNode(node)}.qty=${attributeName(qtyProperty.name)}.number`;
         }
     
         function buildConstraintsForNoneAssembly(node) {
@@ -392,8 +394,8 @@ function extractAssemblies(input) {
                 const isAssembly = isAssemblyPositionNode(n);
                 
                 return [
-                    `${prune_attribute_name} in {Yes}${operator}${positionName(n.name)}.qty=0`,
-                    isAssembly ? `${positionName(n.name)}.qty=0<->${positionName(n.name)}.${prune_attribute_name} in {Yes}` : undefined
+                    `${prune_attribute_name} in {Yes}${operator}${positionNameFromNode(n)}.qty=0`,
+                    isAssembly ? `${positionNameFromNode(n)}.qty=0<->${positionNameFromNode(n)}.${prune_attribute_name} in {Yes}` : undefined
                 ].filter(x => x !== undefined);
             }));
     

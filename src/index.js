@@ -49,7 +49,11 @@ function checks(result) {
 async function processRequest(inputData, endpoint, authorization, job) {
   job.log = [];
   job.log.push('reading input data');
+  
   let result = palmaToTacton(inputData);
+  
+  fs.writeFileSync('./public/model/' + job.id + '.json', JSON.stringify(result, null, 2));
+
   const client = createClient(endpoint, authorization);
 
   job.log.push(`creating/updating domains (${result.domains.length})`);
@@ -134,6 +138,7 @@ async function server() {
       console.log(`ticket: ${ticket}`);
 
       jobs[jobId] = {
+        id: jobId,
         startedAt: new Date(),
         status: "in progress"
       }

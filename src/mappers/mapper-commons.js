@@ -1,3 +1,5 @@
+const R = require('ramda');
+
 // ----------------------------------------------------------------------------
 
 const prefix = 'palma_';
@@ -32,6 +34,16 @@ function standardizeName(name) {
         .replace(/^\_+/g, '')
         .replace(/^$/g, '_missing')
         .toLowerCase();
+}
+
+function standardizeCodeFromNode(node) {
+    let codePart = '';
+
+    if (node.type !== 'Root') {
+        codePart = standardizeName((node.code && node.code !== 'n/a') ? node.code : R.take(6, node.uid)).replace(/\_/g, '') + '_';
+    }
+
+    return codePart;
 }
 
 function domainName(name) {
@@ -80,12 +92,23 @@ function assemblyName(name) {
     return prefix + standardizeName(name) + '_assembly';
 }
 
+function assemblyNameFromNode(node) {
+    const codePart = standardizeCodeFromNode(node);
+
+    return prefix + codePart + standardizeName(node.name) + '_assembly';
+}
+
 function assemblyVirtualVariantName(name) {
     return standardizeName(name) + '_variant';
 }
 
 function positionName(name) {
     return standardizeName(name) + '_position';
+}
+
+function positionNameFromNode(node) {
+    const codePart = standardizeCodeFromNode(node);
+    return codePart + standardizeName(node.name) + '_position';
 }
 
 function attributeName(name) {
@@ -123,8 +146,10 @@ module.exports = {
     featureName,
     variantName,
     assemblyName,
+    assemblyNameFromNode,
     assemblyVirtualVariantName,
     positionName,
+    positionNameFromNode,
     attributeName,
     assemblyToPositionName,
     featureToAttributeName,

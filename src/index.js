@@ -4,6 +4,7 @@ const multer = require('multer');
 const fs = require('fs');
 const { v4: uuidv4 } = require('uuid');
 
+const { delay } = require('./utils');
 const { createClient } = require('./client');
 const { readInput } = require('./input');
 const { palmaToTacton } = require('./mappers/mapper');
@@ -52,21 +53,48 @@ async function processRequest(inputData, endpoint, authorization, job) {
   const client = createClient(endpoint, authorization);
 
   job.log.push(`creating/updating domains (${result.domains.length})`);
-  await client.createDomains(result);
+  //await client.createDomains(result);
 
   job.log.push(`creating/updating categories (${result.categories.length})`);
-  await client.createAttributeCategories(result);
+  //await client.createAttributeCategories(result);
 
   job.log.push(`creating/updating global features (${result.globalFeatures.length})`);
-  await client.createGlobalFeatures(result);
+  //await client.createGlobalFeatures(result);
 
   job.log.push(`creating/updating modules (${result.modules.length})`);
-  const modulesSorted = R.sortBy(m => -m.variants.length, result.modules);
-  const moduleParts = R.splitEvery(20, modulesSorted);
+  // const modulesSorted = R.sortBy(m => -m.variants.length, result.modules);
+  // const bigModules = modulesSorted.filter(m => m.variants.length > 100);
+  // const bigModulesParts = bigModules.map(m => [m]);
+  // const remainingModulesParts = R.splitEvery(50, R.drop(bigModules.length, modulesSorted));
+  // const moduleParts = bigModulesParts.concat(remainingModulesParts);
 
-  for (const modules of moduleParts) {
-    await client.createModules({ modules });
-  }
+  // for (const modules of moduleParts) {
+  //   job.log.push(` - batch of ${modules.length} module(s), total variants ${R.reduce(R.add, 0, modules.map(m => m.variants.length))}`);
+    // if (modules.length === 1) {
+    //   await client.createModule({ module: modules[0]})
+    // } else {
+      const asyncResponse = await client.createModulesAsync(result);
+      const moduleLoadJobId = asyncResponse.upsertModulesAsync;
+      console.log('job id', moduleLoadJobId);
+      
+      let moduleLoadJobStatus = await client.job({ id: moduleLoadJobId });
+
+      while (moduleLoadJobStatus.job.status === 'InProgress') {
+          await delay(5000);
+          moduleLoadJobStatus = await client.job({ id: moduleLoadJobId });
+
+          console.log('job', moduleLoadJobStatus);
+      }
+
+      if (moduleLoadJobStatus.job.status === "Error") {
+        console.log('job', moduleLoadJobStatus);
+        throw moduleLoadJobStatus.error;
+      }
+
+      console.log('job', moduleLoadJobStatus);
+      
+    // }
+  // }
 
   job.log.push(`creating/updating assemblies (${result.assemblies.length})`);
   await client.createAssemblies(result);

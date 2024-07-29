@@ -7,9 +7,12 @@ function createClient(endpoint, authorization) {
         createDomains: (variables) => handleErrors(gqlClient.request(createDomains, variables).then(r => r.result || r)),
         createGlobalFeatures: (variables) => handleErrors(gqlClient.request(createGlobalFeatures, variables).then(r => r.result || r)),
         createAttributeCategories: (variables) => handleErrors(gqlClient.request(createAttributeCategories, variables).then(r => r.result || r)),
+        createModule: (variables) => handleErrors(gqlClient.request(createModule, variables).then(r => r.result || r)),
         createModules: (variables) => handleErrors(gqlClient.request(createModules, variables).then(r => r.result || r)),
+        createModulesAsync: (variables) => handleErrors(gqlClient.request(createModulesAsync, variables).then(r => r.result || r)),
         createAssemblies: (variables) => handleErrors(gqlClient.request(createAssemblies, variables).then(r => r.result || r)),
         createAssembly: (variables) => handleErrors(gqlClient.request(createAssembly, variables).then(r => r.result || r)),
+        job: (variables) => handleErrors(gqlClient.request(job, variables).then(r => r.result || r)),
     };
 }
 
@@ -47,6 +50,15 @@ const createDomains = gql`
     }
 `;
 
+const createModule = gql`
+    mutation($module: ModuleInput!) {
+        upsertModule(module: $module) {
+            id
+        }
+    }
+`;
+
+
 const createModules = gql`
     mutation($modules: [ModuleInput]!) {
         upsertModules(modules: $modules) {
@@ -54,6 +66,13 @@ const createModules = gql`
         }
     }
 `;
+
+const createModulesAsync = gql`
+    mutation($modules: [ModuleInput]!) {
+        upsertModulesAsync(modules: $modules)
+    }
+`;
+
 
 const createAssemblies = gql`
     mutation($assemblies: [AssemblyInput]!) {
@@ -67,6 +86,16 @@ const createAssembly = gql`
     mutation($assembly: AssemblyInput!) {
         upsertAssembly(assembly: $assembly) {
             id
+        }
+    }
+`;
+
+const job = gql`
+    query($id: ID!) {
+        job(id: $id) {
+            id
+            status
+            error
         }
     }
 `;

@@ -167,7 +167,7 @@ function extractAssemblies(input) {
                     description: property.name,
                     domain: { name: domainName(property.name) },
                     io: property.unifier,
-                    aggregationStrategy: 'Equal',
+                    aggregationStrategy: property.unifier ? 'Equal' : 'None',
                     aggregateList: aggregatedModulePositionNodes.map(modulePositionNode => ({
                         position: { name: positionNameFromNode(modulePositionNode) },
                         feature: { name: featureName(property.name) }

@@ -386,7 +386,7 @@ function extractAssemblies(input) {
             return `${positionNameFromNode(node)}.qty=0 or ${positionNameFromNode(node)}.qty=${attributeName(qtyProperty.name)}.number`;
         }
     
-        function buildConstraintsForNoneAssembly(node) {
+        function buildConstraintsForOptionality(node) {
             const positionNodes = node.nodes.filter(isPositionNode);
     
             const positionConstraints = R.flatten(positionNodes.map(n => {
@@ -395,7 +395,8 @@ function extractAssemblies(input) {
                 
                 return [
                     `${prune_attribute_name} in {Yes}${operator}${positionNameFromNode(n)}.qty=0`,
-                    isAssembly ? `${positionNameFromNode(n)}.qty=0<->${positionNameFromNode(n)}.${prune_attribute_name} in {Yes}` : undefined
+                    isNodeFixedQty(n) ? `${prune_attribute_name} in {No}<->${positionNameFromNode(n)}.qty=${n.quantity}` : undefined,
+                    isAssembly ? `${positionNameFromNode(n)}.${prune_attribute_name} in {Yes}<->${positionNameFromNode(n)}.qty=0` : undefined
                 ].filter(x => x !== undefined);
             }));
     
@@ -449,13 +450,13 @@ function extractAssemblies(input) {
             constraint: buildConstraintForNoneVariant(n)
         }));
 
-        const rulesForNoneAssemblies = buildConstraintsForNoneAssembly(node).map(constraint => ({
+        const rulesForOptionality = buildConstraintsForOptionality(node).map(constraint => ({
             type: 'Constraint',
             ruleGroup: 'Palma (prune control)',
             constraint
         }));
 
-        const caseSubNodes = node?.nodes?.filter(n => n?.cases?.length > 0);
+        const caseSubNodes = node?.nodes?.filter(hasNodeQtyCases);
 
         const constraintsFromCases = R.flatten(caseSubNodes.filter(sn => !sn.variable).map(sn => buildConstraintFromCases(sn))).filter(c => c !== undefined);
         const rulesFromCases = constraintsFromCases.map(constraint => ({
@@ -470,7 +471,7 @@ function extractAssemblies(input) {
             .concat(rulesFromVariablePositions)
             .concat(rulesFromCases)
             .concat(rulesForNoneVariants)
-            .concat(rulesForNoneAssemblies);
+            .concat(rulesForOptionality);
 
         return rules;
 
@@ -607,6 +608,15 @@ function hasProperty(module, propertyUid) {
 function isNodeVariable(node) {
     return node.variable && Boolean(node.qtyPropertyUid)
 }
+
+function hasNodeQtyCases(node) {
+    return node.cases?.length > 0;
+}
+
+function isNodeFixedQty(node) {
+    return !isNodeVariable(node) && !hasNodeQtyCases(node);
+}
+
 
 // ----------------------------------------------------------------------------
 

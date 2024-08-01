@@ -56,36 +56,36 @@ async function processRequest(inputData, endpoint, authorization, job) {
 
   const client = createClient(endpoint, authorization);
 
-  job.log.push(`creating/updating domains (${result.domains.length})`);
-  await client.createDomains(result);
+  // job.log.push(`creating/updating domains (${result.domains.length})`);
+  // await client.createDomains(result);
 
-  job.log.push(`creating/updating categories (${result.categories.length})`);
-  await client.createAttributeCategories(result);
+  // job.log.push(`creating/updating categories (${result.categories.length})`);
+  // await client.createAttributeCategories(result);
 
-  job.log.push(`creating/updating global features (${result.globalFeatures.length})`);
-  await client.createGlobalFeatures(result);
+  // job.log.push(`creating/updating global features (${result.globalFeatures.length})`);
+  // await client.createGlobalFeatures(result);
 
-  job.log.push(`creating/updating modules (${result.modules.length})`);
+  // job.log.push(`creating/updating modules (${result.modules.length})`);
 
-    const asyncResponse = await client.createModulesAsync(result);
-    const moduleLoadJobId = asyncResponse.upsertModulesAsync;
-    console.log('job id', moduleLoadJobId);
+  //   const asyncResponse = await client.createModulesAsync(result);
+  //   const moduleLoadJobId = asyncResponse.upsertModulesAsync;
+  //   console.log('job id', moduleLoadJobId);
     
-    let moduleLoadJobStatus = await client.job({ id: moduleLoadJobId });
+  //   let moduleLoadJobStatus = await client.job({ id: moduleLoadJobId });
 
-    while (moduleLoadJobStatus.job.status === 'InProgress') {
-        await delay(5000);
-        moduleLoadJobStatus = await client.job({ id: moduleLoadJobId });
+  //   while (moduleLoadJobStatus.job.status === 'InProgress') {
+  //       await delay(5000);
+  //       moduleLoadJobStatus = await client.job({ id: moduleLoadJobId });
 
-        console.log('job', moduleLoadJobStatus);
-    }
+  //       console.log('job', moduleLoadJobStatus);
+  //   }
 
-    if (moduleLoadJobStatus.job.status === "Error") {
-      console.log('job', moduleLoadJobStatus);
-      throw moduleLoadJobStatus.error;
-    }
+  //   if (moduleLoadJobStatus.job.status === "Error") {
+  //     console.log('job', moduleLoadJobStatus);
+  //     throw moduleLoadJobStatus.error;
+  //   }
 
-    console.log('job', moduleLoadJobStatus);
+  //   console.log('job', moduleLoadJobStatus);
       
 
   job.log.push(`creating/updating assemblies (${result.assemblies.length})`);

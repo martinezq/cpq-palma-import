@@ -52,7 +52,7 @@ async function processRequest(inputData, endpoint, authorization, job) {
   
   let result = palmaToTacton(inputData);
   
-  fs.writeFileSync('./public/model/' + job.id + '.json', JSON.stringify(result, null, 2));
+  // fs.writeFileSync('./public/model/' + job.id + '.json', JSON.stringify(result, null, 2));
 
   const client = createClient(endpoint, authorization);
 
@@ -74,7 +74,7 @@ async function processRequest(inputData, endpoint, authorization, job) {
     let moduleLoadJobStatus = await client.job({ id: moduleLoadJobId });
 
     while (moduleLoadJobStatus.job.status === 'InProgress') {
-        await delay(5000);
+        await delay(10000);
         moduleLoadJobStatus = await client.job({ id: moduleLoadJobId });
 
         console.log('job', moduleLoadJobStatus);

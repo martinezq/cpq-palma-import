@@ -168,10 +168,10 @@ function extractAssemblies(input) {
                     domain: { name: domainName(property.name) },
                     io: property.unifier,
                     aggregationStrategy: property.unifier ? 'Equal' : 'None',
-                    aggregateList: aggregatedModulePositionNodes.map(modulePositionNode => ({
+                    aggregateList: property.unifier ? aggregatedModulePositionNodes.map(modulePositionNode => ({
                         position: { name: positionNameFromNode(modulePositionNode) },
                         feature: { name: featureName(property.name) }
-                    })),
+                    })) : [],
                     category: { name: technical_attribute_category_name }
                 };
             }            
@@ -302,10 +302,15 @@ function extractAssemblies(input) {
             const attributesGroupedByName = R.values(attributesMapGroupedByName);
 
             // example output: [ { name: 'attr1', aggregateList: [ al1, al3 ] }, {name: 'attr2', aggregateList: [ al2 ] }]
-            const attributesMerged = attributesGroupedByName.map(attributeGroup => ({
-                ...attributeGroup[0],
-                aggregateList: R.uniqBy(x => x, R.flatten(attributeGroup.map(x => x.aggregateList || [])))
-            }))
+            const attributesMerged = attributesGroupedByName.map(attributeGroup => {
+                const aggregateList = R.uniqBy(x => x, R.flatten(attributeGroup.map(x => x.aggregateList || [])));
+                
+                return {
+                    ...attributeGroup[0],
+                    aggregationStrategy: aggregateList.length > 0 ? 'Equal' : 'None',
+                    aggregateList
+                }
+            });
     
             const attributesSorted = R.sortBy(at => at.name, attributesMerged);
 

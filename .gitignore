@@ -1,2 +1,3 @@
 /node_modules
-/public/model
+/public/model/*
+/in

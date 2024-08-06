@@ -9,9 +9,13 @@ const { createClient } = require('./client');
 const { readInput } = require('./input');
 const { palmaToTacton } = require('./mappers/mapper');
 
-const GRAPHQL_SERVER_URL = 'https://cpq-graphql-server.herokuapp.com/promo/';
-// const GRAPHQL_SERVER_URL = 'http://localhost:4000/promo/';
+// const GRAPHQL_SERVER_URL = 'https://cpq-graphql-server.herokuapp.com/promo/';
+const GRAPHQL_SERVER_LOCAL_URL = 'http://localhost:4000/promo/';
+
+const graphql_server_url = process.env.GRAPHQL_SERVER_URL || GRAPHQL_SERVER_LOCAL_URL;
 const port = process.env.PORT || 3000;
+
+const isLocal = port === 3000;
 
 let jobs = {};
 
@@ -52,7 +56,9 @@ async function processRequest(inputData, endpoint, authorization, job) {
   
   let result = palmaToTacton(inputData);
   
-  // fs.writeFileSync('./public/model/' + job.id + '.json', JSON.stringify(result, null, 2));
+  if (isLocal) {
+    fs.writeFileSync('./public/model/' + job.id + '.json', JSON.stringify(result, null, 2));
+  }
 
   const client = createClient(endpoint, authorization);
 
@@ -130,7 +136,7 @@ async function server() {
     const jobId = uuidv4();
 
     try {
-      const endpoint = `${GRAPHQL_SERVER_URL}/${baseUrlPure}/${ticket}`;
+      const endpoint = `${graphql_server_url}/${baseUrlPure}/${ticket}`;
       const jsonData = JSON.parse(req.file.buffer.toString());
       // Process the JSON data as needed
       // console.log(`Received JSON data: ${JSON.stringify(jsonData)}`);

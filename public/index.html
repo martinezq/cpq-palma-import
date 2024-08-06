@@ -63,6 +63,11 @@
             background-color: #0056b3;
         }
 
+        input[type="submit"]:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
         pre {
             background-color: #f9f9f9;
             padding: 10px;
@@ -71,8 +76,8 @@
             color: #333;
             white-space: pre-wrap;
             word-wrap: break-word;
-            max-height: 400px;  /* Set the desired maximum height */
-            overflow: auto;     /* Enable scrolling if content exceeds the max height */
+            max-height: 400px;
+            overflow: auto;
         }
     </style>
     <script>
@@ -85,6 +90,7 @@
             const password = document.getElementById('password').value;
             const fileInput = document.getElementById('file');
             const file = fileInput.files[0];
+            const submitButton = document.querySelector('input[type="submit"]');
 
             const formData = new FormData();
             formData.append('file', file);
@@ -107,6 +113,8 @@
                 const jobId = result.jobId;
 
                 document.getElementById('status').innerText = `Job ID: ${jobId}. Checking status...`;
+                submitButton.disabled = true;
+                submitButton.value = 'Updating...';
 
                 // Polling for job status
                 const statusInterval = setInterval(async () => {
@@ -120,12 +128,24 @@
                     const statusResult = await statusResponse.json();
                     document.getElementById('status').innerText = JSON.stringify(statusResult, null, 2);
 
-                    if (statusResult.status === 'completed' || statusResult.status === 'error') {
+                    if (statusResult.status === 'in progress') {
+                        document.querySelector('pre').style.backgroundColor = '#ffffe0'; // Light yellow
+                    } else if (statusResult.status === 'error') {
+                        document.querySelector('pre').style.backgroundColor = '#ffd6d6'; // Light red
                         clearInterval(statusInterval);
+                        submitButton.disabled = false;
+                        submitButton.value = 'Upload';
+                    } else if (statusResult.status === 'completed') {
+                        document.querySelector('pre').style.backgroundColor = '#d6ffd6'; // Light green
+                        clearInterval(statusInterval);
+                        submitButton.disabled = false;
+                        submitButton.value = 'Upload';
                     }
                 }, 3000); // Poll every 3 seconds
             } catch (error) {
                 document.getElementById('status').innerText = `Error: ${error.message}`;
+                submitButton.disabled = false;
+                submitButton.value = 'Upload';
             }
         }
     </script>

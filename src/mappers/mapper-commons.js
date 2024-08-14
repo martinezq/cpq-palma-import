@@ -76,6 +76,11 @@ function domainType({ type, integer, values}) {
     }
 }
 
+function moduleNameFromModule(module) {
+    const codePart = module.code !== 'n/a' ? standardizeName(module.code) + '_' : '';
+    return prefix + codePart + standardizeName(module.name) + '_module';
+}
+
 function moduleName(name) {
     return prefix + standardizeName(name) + '_module';
 }
@@ -86,6 +91,11 @@ function featureName(name) {
 
 function variantName(name) {
     return standardizeName(name) + '_variant';
+}
+
+function variantNameFromVariant(variant) {
+    const codePart = variant.code !== 'n/a' ? standardizeName(variant.code) + '_' : '';
+    return codePart + standardizeName(variant.name) + '_variant';
 }
 
 function assemblyName(name) {
@@ -143,8 +153,10 @@ module.exports = {
     referenceValue,
     domainType,
     moduleName,
+    moduleNameFromModule,
     featureName,
     variantName,
+    variantNameFromVariant,
     assemblyName,
     assemblyNameFromNode,
     assemblyVirtualVariantName,

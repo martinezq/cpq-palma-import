@@ -12,6 +12,7 @@ const {
     referenceValue,
     domainType,
     moduleName,
+    moduleNameFromModule,
     featureName,
     variantName,
     assemblyName,
@@ -101,7 +102,7 @@ function extractAssemblies(input) {
         return positionNodes.map(pn => ({
             name: positionNameFromNode(pn),
             description: pn.name,
-            module: isModulePositionNode(pn) ? { name: moduleName(pn.realizationName)} : undefined,
+            module: isModulePositionNode(pn) ? { name: moduleNameFromModule(lookupModuleByUid(pn.realization))} : undefined,
             assembly: isAssemblyPositionNode(pn) ? { name: assemblyNameFromNode(pn)} : undefined,
             qtyMin: extractPositionMinQty(pn),
             qtyMax: extractPositionMaxQty(pn)

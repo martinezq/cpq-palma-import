@@ -18,8 +18,10 @@ const {
     referenceValue,
     domainType,
     moduleName,
+    moduleNameFromModule,
     featureName,
     variantName,
+    variantNameFromVariant,
     attributeCategoryName,
     isNodeOptional
 } = require('./mapper-commons');
@@ -187,7 +189,7 @@ function extractModules(input) {
         }
 
         return {
-            name: moduleName(m.name),
+            name: moduleNameFromModule(m),
             description: m.name,
             features: m.propertyRelations?.map(pr => ({
                 name: featureName(lookupProperty(pr).name),
@@ -222,7 +224,7 @@ function extractModules(input) {
         }];
 
         return {
-            name: variantName(v.name),
+            name: variantNameFromVariant(v),
             description: v.name,
             values: localFeatureValues.concat(missingModuleFeatureValues).concat(globalFeatureValues).concat(standardFeatureValues)
         }

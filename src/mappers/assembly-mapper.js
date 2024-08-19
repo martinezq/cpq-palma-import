@@ -620,7 +620,7 @@ function hasNodeQtyCases(node) {
 }
 
 function isNodeFixedQty(node) {
-    return !isNodeVariable(node) && !hasNodeQtyCases(node);
+    return !isNodeVariable(node) && !hasNodeQtyCases(node) && !isNodeOptional(node);
 }
 
 

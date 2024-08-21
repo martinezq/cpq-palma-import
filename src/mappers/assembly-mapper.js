@@ -120,7 +120,7 @@ function extractAssemblies(input) {
 
             tabs.forEach(tab => {
                 const category = { name: attributeCategoryName(tab.name) };
-                const fields = utils.extractNodes(tab.nodes, n => n.type === 'ConfiguratorField' && n.content?.type === 'Property');
+                const fields = utils.extractNodes(tab.nodes || [], n => n.type === 'ConfiguratorField' && n.content?.type === 'Property');
 
                 const fieldAttributeNames = fields.map(field => {
                     const property = lookupPropertyByUid(field.content.propertyUid);

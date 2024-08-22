@@ -38,7 +38,7 @@ export function standardizeCodeFromNode(node) {
     let codePart = '';
 
     if (node.type !== 'Root') {
-        codePart = standardizeName((node.code && node.code !== 'n/a') ? node.code : R.take(6, node.uid)).replace(/\_/g, '') + '_';
+        codePart = standardizeName((node.code && node.code !== 'n/a') ? node.code : R.take(6, node.uid || '')).replace(/\_/g, '') + '_';
     }
 
     return codePart;

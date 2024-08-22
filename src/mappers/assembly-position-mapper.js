@@ -13,24 +13,6 @@ import {
 } from './mapper-commons.js';
 
 export function extractPositions(node, inputIndexed) {
-        
-    function extractPositionMinQty(positionNode) {
-        if (isNodeOptional(positionNode) || isNodeVariable(positionNode)) return 0;
-
-        const casesMinQty = positionNode.cases?.map(c => c.quantity).reduce(R.min, 999999);
-        if (casesMinQty !== undefined) return casesMinQty;
-
-        return positionNode.quantity;
-    }
-
-    function extractPositionMaxQty(positionNode) {
-        if (isNodeVariable(positionNode)) return 999999;
-
-        const casesMaxQty = positionNode.cases?.map(c => c.quantity).reduce(R.max, 0);
-        if (casesMaxQty !== undefined) return casesMaxQty;
-
-        return positionNode.quantity;
-    }
     
     const positionNodes = node.nodes?.filter(isPositionNode) || [];
 
@@ -43,3 +25,32 @@ export function extractPositions(node, inputIndexed) {
         qtyMax: extractPositionMaxQty(pn)
     }));
 }
+
+function extractPositionMinQty(positionNode) {
+    if (isNodeOptional(positionNode) || isNodeVariable(positionNode)) return 0;
+
+    if (positionNode.cases.length > 0) {
+        const casesMinQty = positionNode.cases?.map(c => c.quantity)?.reduce(R.min, 999999);
+        if (casesMinQty !== undefined) return casesMinQty;
+    }
+
+    return positionNode.quantity;
+}
+
+function extractPositionMaxQty(positionNode) {
+    if (isNodeVariable(positionNode)) return 999999;
+
+    if (positionNode.cases.length > 0) {
+        const casesMaxQty = positionNode.cases?.map(c => c.quantity).reduce(R.max, 0);
+        if (casesMaxQty !== undefined) return casesMaxQty;
+    }
+
+    return positionNode.quantity;
+}
+
+// ----------------------------------------------------------------------------
+
+export const _test = {
+    extractPositionMaxQty,
+    extractPositionMinQty
+};

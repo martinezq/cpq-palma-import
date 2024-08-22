@@ -1,7 +1,9 @@
 import * as R from 'ramda';
 
 import * as utils from '../utils.js';
-import { extractAssemblies, optimizeAssemblies } from './assembly-mapper.js';
+import { extractAssemblies } from './assembly-mapper.js';
+import { optimizeAssemblies } from './assembly-optimizer.js'
+
 import {
     references_domain_name,
     references_domain_description,
@@ -23,6 +25,8 @@ import {
     isNodeOptional
 } from './mapper-commons.js';
 
+
+
 // ----------------------------------------------------------------------------
 
 export function palmaToTacton(input) {
@@ -37,7 +41,7 @@ export function palmaToTacton(input) {
         categories: generateAttributeCategories(input),
         globalFeatures: generateGlobalFeatures(input),        
         modules: extractModules(input),
-        assemblies: optimizedAssemblies //.filter(a => a.name === 'palma_li_ion_pack_assembly')
+        assemblies: optimizedAssemblies
     };
 }
 

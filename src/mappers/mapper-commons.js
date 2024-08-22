@@ -140,3 +140,51 @@ export function attributeCategoryName(name) {
 export function isNodeOptional(node) {
     return node.optional || node._optionalInherited;
 }
+
+export function isPositionNode(node) {
+    return isAssemblyPositionNode(node) || isModulePositionNode(node);
+}
+
+export function isAssemblyNode(node) {
+    return node.type === 'ModuleSetNode' || node.type === 'Root' || node.type === 'LibraryInstanceNode';
+}
+
+export function isAssemblyPositionNode(node) {
+    return node.type === 'ModuleSetNode' || node.type === 'LibraryInstanceNode';
+}
+
+export function isModulePositionNode(node) {
+    return node.type === 'ModuleInstanceNode';
+}
+
+export function hasProperty(module, propertyUid) {
+    return Boolean(module?.propertyRelations?.find(pr => pr.propertyUid === propertyUid));
+}
+
+export function isNodeVariable(node) {
+    return node.variable && Boolean(node.qtyPropertyUid)
+}
+
+export function hasNodeQtyCases(node) {
+    return node.cases?.length > 0;
+}
+
+export function isNodeFixedQty(node) {
+    return !isNodeVariable(node) && !hasNodeQtyCases(node) && !isNodeOptional(node);
+}
+
+// ----------------------------------------------------------------------------
+
+export function lookupPropertyByUid(propertyUid, inputIndexed) {
+    if (!inputIndexed) {
+        throw 'input indexed required'
+    }
+    return inputIndexed.propertyMap[propertyUid];
+}
+
+export function lookupModuleByUid(moduleUid, inputIndexed) {
+    if (!inputIndexed) {
+        throw 'input indexed required'
+    }
+    return inputIndexed.rawInput.configurationIntent.modules.find(m => m.uid === moduleUid);
+}

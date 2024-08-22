@@ -1,30 +1,28 @@
-const R = require('ramda');
+import * as R from 'ramda';
 
 // ----------------------------------------------------------------------------
 
 const prefix = 'palma_';
 
-const constants = {
-  references_domain_name: prefix + 'reference_domain',
-  references_domain_description: 'Reference',
+export const references_domain_name = prefix + 'reference_domain';
+export const references_domain_description = 'Reference';
 
-  none_domain_element_name: 'none',
+export const none_domain_element_name = 'none';
 
-  none_variant_name: 'none',
-  none_variant_description: 'None',
+export const none_variant_name = 'none';
+export const none_variant_description = 'None';
 
-  reference_global_feature_name: 'reference_feature',
-  reference_global_feature_description: 'Reference',
+export const reference_global_feature_name = 'reference_feature';
+export const reference_global_feature_description = 'Reference';
 
-  prune_attribute_name: '_prune_attribute',
+export const prune_attribute_name = '_prune_attribute';
 
-  technical_attribute_category_name: 'palma_remaining_attributes_category',
-  technical_attribute_category_description: 'Remaining attributes'
-};
+export const technical_attribute_category_name = 'palma_remaining_attributes_category';
+export const technical_attribute_category_description = 'Remaining attributes';
 
 // ----------------------------------------------------------------------------
 
-function standardizeName(name) {
+export function standardizeName(name) {
     return (name || '-')
         .replace(/\+/g, 'plus')
         .replace(/\</g, 'lt')
@@ -36,7 +34,7 @@ function standardizeName(name) {
         .toLowerCase();
 }
 
-function standardizeCodeFromNode(node) {
+export function standardizeCodeFromNode(node) {
     let codePart = '';
 
     if (node.type !== 'Root') {
@@ -46,23 +44,23 @@ function standardizeCodeFromNode(node) {
     return codePart;
 }
 
-function domainName(name) {
+export function domainName(name) {
     return prefix + standardizeName(name) + '_domain';
 }
 
-function domainElementName(name) {
+export function domainElementName(name) {
     if (name === 'Yes' || name === 'No') {
         return name;
     }
     return standardizeName(name);
 }
 
-function referenceValue(v) {
+export function referenceValue(v) {
     return v.trim();
 }
 
-function domainType({ type, integer, values}) {
-    switch(type) {
+export function domainType({ type, integer, values }) {
+    switch (type) {
         case 'LIST': return 'Enum';
         case 'DISCRETE': return 'Enum';
         case 'YESNO': return 'Boolean';
@@ -76,95 +74,69 @@ function domainType({ type, integer, values}) {
     }
 }
 
-function moduleNameFromModule(module) {
+export function moduleNameFromModule(module) {
     const codePart = module.code !== 'n/a' ? standardizeName(module.code) + '_' : '';
     return prefix + codePart + standardizeName(module.name) + '_module';
 }
 
-function moduleName(name) {
+export function moduleName(name) {
     return prefix + standardizeName(name) + '_module';
 }
 
-function featureName(name) {
+export function featureName(name) {
     return standardizeName(name) + '_feature';
 }
 
-function variantName(name) {
+export function variantName(name) {
     return standardizeName(name) + '_variant';
 }
 
-function variantNameFromVariant(variant) {
+export function variantNameFromVariant(variant) {
     const codePart = variant.code !== 'n/a' ? standardizeName(variant.code) + '_' : '';
     return codePart + standardizeName(variant.name) + '_variant';
 }
 
-function assemblyName(name) {
+export function assemblyName(name) {
     return prefix + standardizeName(name) + '_assembly';
 }
 
-function assemblyNameFromNode(node) {
+export function assemblyNameFromNode(node) {
     const codePart = standardizeCodeFromNode(node);
 
     return prefix + codePart + standardizeName(node.name) + '_assembly';
 }
 
-function assemblyVirtualVariantName(name) {
+export function assemblyVirtualVariantName(name) {
     return standardizeName(name) + '_variant';
 }
 
-function positionName(name) {
+export function positionName(name) {
     return standardizeName(name) + '_position';
 }
 
-function positionNameFromNode(node) {
+export function positionNameFromNode(node) {
     const codePart = standardizeCodeFromNode(node);
     return codePart + standardizeName(node.name) + '_position';
 }
 
-function attributeName(name) {
+export function attributeName(name) {
     return standardizeName(name) + '_attribute';
 }
 
-function assemblyToPositionName(name) {
+export function assemblyToPositionName(name) {
     return name.replace(/_assembly$/, '_position').replace(prefix, '');
 }
 
-function featureToAttributeName(name) {
+export function featureToAttributeName(name) {
     return name.replace(/_feature$/, '_attribute');
 }
 
-function attributeCategoryName(name) {
+export function attributeCategoryName(name) {
     return prefix + standardizeName(name) + '_category';
 }
 
 // ----------------------------------------------------------------------------
 
-function isNodeOptional(node) {
+export function isNodeOptional(node) {
     return node.optional || node._optionalInherited;
 }
-
-// ----------------------------------------------------------------------------
-
-module.exports = {
-    ...constants,
-    standardizeName,
-    domainName,
-    domainElementName,
-    referenceValue,
-    domainType,
-    moduleName,
-    moduleNameFromModule,
-    featureName,
-    variantName,
-    variantNameFromVariant,
-    assemblyName,
-    assemblyNameFromNode,
-    assemblyVirtualVariantName,
-    positionName,
-    positionNameFromNode,
-    attributeName,
-    assemblyToPositionName,
-    featureToAttributeName,
-    attributeCategoryName,
-    isNodeOptional
-};

@@ -1,8 +1,8 @@
-const R = require('ramda');
+import * as R from 'ramda';
 
-const utils = require('../utils');
+import * as utils from '../utils.js';
 
-const {
+import {
     none_domain_element_name,
     reference_global_feature_name,
     prune_attribute_name,
@@ -24,11 +24,11 @@ const {
     attributeCategoryName,
     assemblyVirtualVariantName,
     isNodeOptional
-} = require('./mapper-commons');
+} from './mapper-commons.js';
 
 // ----------------------------------------------------------------------------
 
-function extractAssemblies(input) {
+export function extractAssemblies(input) {
     
     let propertyMap;
 
@@ -245,7 +245,7 @@ function extractAssemblies(input) {
                 //  { name: 'attr2', io: true, aggregateList: [ { position: { name: 'assy1_position' }, attribute: { name: 'attr2'} } ] },
                 //  { name: 'attr3', io: true, aggregateList: [ { position: { name: 'assy1_position' }, attribute: { name: 'attr3'} } ] } 
                 // ]
-                mappedAttributes = aggregatedAttributes.map(attribute => ({
+                const mappedAttributes = aggregatedAttributes.map(attribute => ({
                     ...attribute,
                     aggregationStrategy: 'Equal',
                     aggregateList: [{
@@ -406,7 +406,7 @@ function extractAssemblies(input) {
                 ].filter(x => x !== undefined);
             }));
     
-            if (!Boolean(node._parentNode)) {
+            if (!node._parentNode) {
                 return positionConstraints.concat([`${prune_attribute_name} in {No}`]);
             }
     
@@ -507,7 +507,7 @@ function extractAssemblies(input) {
 
 // ----------------------------------------------------------------------------
 
-function optimizeAssemblies(assemblies) {
+export function optimizeAssemblies(assemblies) {
    
     assemblies = R.clone(assemblies);
 
@@ -622,11 +622,3 @@ function hasNodeQtyCases(node) {
 function isNodeFixedQty(node) {
     return !isNodeVariable(node) && !hasNodeQtyCases(node) && !isNodeOptional(node);
 }
-
-
-// ----------------------------------------------------------------------------
-
-module.exports = {
-    extractAssemblies,
-    optimizeAssemblies
-};

@@ -1,11 +1,11 @@
-function processNodesRecursively(nodes, fn, ctx = {}) {
+export function processNodesRecursively(nodes, fn, ctx = {}) {
     nodes.forEach(node => {
         fn(node, ctx);
         processNodesRecursively(node.nodes || [], fn, ctx);
     });
 }
 
-function extractNodes(nodes, fn) {
+export function extractNodes(nodes, fn) {
     let ctx = { result: [] };
     processNodesRecursively(nodes, n => {
         const ok = Boolean(fn(n));
@@ -16,12 +16,6 @@ function extractNodes(nodes, fn) {
     return ctx.result;
 }
 
-function delay(ms) {
+export function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
-  }
-
-module.exports = {
-    processNodesRecursively,
-    extractNodes,
-    delay
 }

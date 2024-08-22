@@ -1,6 +1,6 @@
-const { GraphQLClient, gql } = require('graphql-request');
+import { GraphQLClient, gql } from 'graphql-request';
 
-function createClient(endpoint, authorization) {
+export function createClient(endpoint, authorization) {
     const gqlClient = new GraphQLClient(endpoint, { headers: { authorization } });
 
     return {
@@ -17,11 +17,10 @@ function createClient(endpoint, authorization) {
 }
 
 function handleErrors(promise) {
-    return promise
-        .catch(e => {
-            console.log('ERROR', e);
-            return Promise.reject(e);
-        })
+    return promise.catch(e => {
+        console.log('ERROR', e);
+        return Promise.reject(e);
+    });
 }
 
 // QUERIES
@@ -58,7 +57,6 @@ const createModule = gql`
     }
 `;
 
-
 const createModules = gql`
     mutation($modules: [ModuleInput]!) {
         upsertModules(modules: $modules) {
@@ -72,7 +70,6 @@ const createModulesAsync = gql`
         upsertModulesAsync(modules: $modules)
     }
 `;
-
 
 const createAssemblies = gql`
     mutation($assemblies: [AssemblyInput]!) {
@@ -100,6 +97,14 @@ const job = gql`
     }
 `;
 
-module.exports = {
-    createClient
-}
+export {
+    createGlobalFeatures,
+    createAttributeCategories,
+    createDomains,
+    createModule,
+    createModules,
+    createModulesAsync,
+    createAssemblies,
+    createAssembly,
+    job
+};

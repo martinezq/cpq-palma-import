@@ -1,8 +1,8 @@
-const R = require('ramda');
+import * as R from 'ramda';
 
-const utils = require('../utils');
-const { extractAssemblies, optimizeAssemblies } = require('./assembly-mapper');
-const {
+import * as utils from '../utils.js';
+import { extractAssemblies, optimizeAssemblies } from './assembly-mapper.js';
+import {
     references_domain_name,
     references_domain_description,
     none_domain_element_name,
@@ -10,29 +10,26 @@ const {
     none_variant_description,
     reference_global_feature_name,
     reference_global_feature_description,
-    prune_attribute_name,
     technical_attribute_category_name,
     technical_attribute_category_description,
     domainName,
     domainElementName,
     referenceValue,
     domainType,
-    moduleName,
     moduleNameFromModule,
     featureName,
-    variantName,
     variantNameFromVariant,
     attributeCategoryName,
     isNodeOptional
-} = require('./mapper-commons');
+} from './mapper-commons.js';
 
 // ----------------------------------------------------------------------------
 
-function palmaToTacton(input) {
+export function palmaToTacton(input) {
 
     input = applyInheritance(input);
 
-    const fullAssemblies = extractAssemblies(input)
+    const fullAssemblies = extractAssemblies(input);
     const optimizedAssemblies = optimizeAssemblies(fullAssemblies);
     
     return {
@@ -53,7 +50,7 @@ function applyInheritance(input) {
 
         node._parentNode = ctx.parent;
 
-        if (Boolean(ctx.optional)) {
+        if (ctx.optional) {
             node._optionalInherited = true;
         } else {
             ctx.optional = node.optional;
@@ -109,7 +106,7 @@ function extractDomains(input) {
         enumElementList: references.map(r => ({
             name: referenceValue(r)
         }))
-    }
+    };
 
     return systemDomains.concat(productDomains).concat([referenceDomain]);
 }
@@ -126,10 +123,10 @@ function generateAttributeCategories(input) {
     })).concat([{
         name: technical_attribute_category_name,
         description: technical_attribute_category_description
-    }])
+    }]);
 }
 
-function generateGlobalFeatures(input) {
+function generateGlobalFeatures() {
     return [{
         name: reference_global_feature_name,
         description: reference_global_feature_description,
@@ -197,7 +194,7 @@ function extractModules(input) {
                 domain: { name: domainName(lookupProperty(pr).name) }
             })),
             variants
-        }
+        };
     }
 
     function extractModuleVariant(v, m) {
@@ -207,11 +204,11 @@ function extractModules(input) {
         }));
 
         const missingModuleFeatureValues = 
-            (m.propertyRelations || []).filter(mpr => !Boolean(v.propertyRelations?.find(vpr => vpr.propertyUid === mpr.propertyUid)))
+            (m.propertyRelations || []).filter(mpr => !v.propertyRelations?.find(vpr => vpr.propertyUid === mpr.propertyUid))
             .map(pr => ({
                 feature: { name: featureName(lookupProperty(pr).name) },
                 value: 'unspecified'
-            }))
+            }));
 
         const globalFeatureValues = [{
             feature: { name: reference_global_feature_name },
@@ -227,15 +224,8 @@ function extractModules(input) {
             name: variantNameFromVariant(v),
             description: v.name,
             values: localFeatureValues.concat(missingModuleFeatureValues).concat(globalFeatureValues).concat(standardFeatureValues)
-        }
+        };
     }
 
     return input.configurationIntent.modules.map(m => extractModule(m));
-}
-
-
-// ----------------------------------------------------------------------------
-
-module.exports = {
-    palmaToTacton
 }

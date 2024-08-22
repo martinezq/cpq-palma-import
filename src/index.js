@@ -1,13 +1,12 @@
-const R = require('ramda');
-const express = require('express');
-const multer = require('multer');
-const fs = require('fs');
-const { v4: uuidv4 } = require('uuid');
+import * as R from 'ramda';
+import express from 'express';
+import multer from 'multer';
+import fs from 'fs';
+import { v4 as uuidv4 } from 'uuid';
 
-const { delay } = require('./utils');
-const { createClient } = require('./client');
-const { readInput } = require('./input');
-const { palmaToTacton } = require('./mappers/mapper');
+import { delay } from './utils.js';
+import { createClient } from './client.js';
+import { palmaToTacton } from './mappers/mapper.js';
 
 // const GRAPHQL_SERVER_URL = 'https://cpq-graphql-server.herokuapp.com/promo/';
 const GRAPHQL_SERVER_LOCAL_URL = 'http://localhost:4000/promo/';

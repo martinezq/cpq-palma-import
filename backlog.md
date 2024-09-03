@@ -42,7 +42,7 @@ Yes=1
 No=1
 
 
-### #005 [NEW] Qty cases if variable is true
+### #005 [CLOSED] Qty cases if variable is true
 
 For some reason, the constraint to control the cases is not generated when variable is true. Possibly the case logic should work regardless of variable flag
 

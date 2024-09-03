@@ -464,7 +464,7 @@ function extractAssemblies(input) {
 
         const caseSubNodes = node?.nodes?.filter(hasNodeQtyCases);
 
-        const constraintsFromCases = R.flatten(caseSubNodes.filter(sn => !sn.variable).map(sn => buildConstraintFromCases(sn))).filter(c => c !== undefined);
+        const constraintsFromCases = R.flatten(caseSubNodes.map(sn => buildConstraintFromCases(sn))).filter(c => c !== undefined);
         const rulesFromCases = constraintsFromCases.map(constraint => ({
             type: 'Constraint',
             ruleGroup: 'Palma (cases qty)',

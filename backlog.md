@@ -28,12 +28,6 @@ Options:
 - more attributes (for each module position, one qty attribute in the assembly), constraints linking with qty's, aggregation on attributes
 - more constraints covering for missing aggregation
 
-## ??? 
-
-Side sweep-left should be locked to position "left". I don't know how it's in palma yet
-
-Possibly will be solved with unifier on modules
-
 ### #004 [NEW] Qty controlled by boolean property
 
 In this scenario the palma node is flagged as variable=false but has qty property which is of boolean type. Constraint should be generated in this case.
@@ -49,3 +43,7 @@ For some reason, the constraint to control the cases is not generated when varia
 ### #006 [TESTING] Variable Qty should be enforced when prune is No
 
 Currently qty is allowed to be 0 or controlled by qty attribute. Should be more like this: _prune_attribute in {Yes} or n195_side_broom_position.qty=side_broom_qty_attribute.number
+
+### #007 [TESTING] Cases must be represented as combination table as they control more than just the qty
+
+Detected by analyzing: Side sweep-left should be locked to position "left". I don't know how it's in palma yet

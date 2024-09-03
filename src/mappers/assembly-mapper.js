@@ -346,10 +346,6 @@ function extractAssemblies(input) {
 
     function extractRules(node) {
 
-        function buildConstraintFromCases(node) {
-            return node.cases?.map(c => buildConstraintFromCase(node, c));
-        }
-    
         function buildConstraintFromCase(node, c) {
             const module = lookupModuleByUid(node.realization);
     
@@ -376,6 +372,52 @@ function extractAssemblies(input) {
             
             return conditions ? `(${prune_attribute_name} in {No} and ${conditions})->${positionNameFromNode(node)}.qty=${c.quantity}` : undefined;
         }
+
+        function buildCombinationTableFromCases(node) {
+            const module = lookupModuleByUid(node.realization);
+
+            const columns = R.sortBy(pr => pr.propertyUid, node.propertyRelations || [])
+                .map(pr => {
+                const property = lookupPropertyByUid(pr.propertyUid);
+                
+                const isModuleFeature = hasProperty(module, pr.propertyUid)
+                let name;
+                
+                if (isModuleFeature) {
+                    name = positionNameFromNode(node) + '.' + featureName(property.name);
+                } else {
+                    name = attributeName(property.name);
+                }
+
+                return name;
+            });
+            
+            const rows = node.cases.map(c => buildCombinationFowFromCase(node, c));
+    
+            return {
+                columns: [`${positionNameFromNode(node)}.Qty`, prune_attribute_name].concat(columns),
+                rows: rows.concat({ values: ['0', 'Yes'].concat(R.times(x => 'unspecified', columns.length - 1))})
+            };            
+        }
+    
+        function buildCombinationFowFromCase(node, c) {
+            const values =
+                R.sortBy(pr => pr.propertyUid, c.propertyRelations || [])
+                .map(pr => {
+                    if (!pr.valueRelations || pr.valueRelations.length === 0) {
+                        return 'unspecified';
+                    }
+
+                    const values = pr.valueRelations?.map(vr => domainElementName(vr.value));
+    
+                    return values.join(';');
+                    
+                });
+            
+            return { 
+                values: [String(c.quantity), 'No'].concat(values)
+            };
+        }        
     
         function buildConstraintForNoneVariant(node) {
             const name = positionNameFromNode(node);
@@ -464,11 +506,18 @@ function extractAssemblies(input) {
 
         const caseSubNodes = node?.nodes?.filter(hasNodeQtyCases);
 
-        const constraintsFromCases = R.flatten(caseSubNodes.map(sn => buildConstraintFromCases(sn))).filter(c => c !== undefined);
-        const rulesFromCases = constraintsFromCases.map(constraint => ({
-            type: 'Constraint',
+        // const constraintsFromCases = R.flatten(caseSubNodes.map(sn => buildConstraintFromCases(sn))).filter(c => c !== undefined);
+        // const rulesFromCases = constraintsFromCases.map(constraint => ({
+        //     type: 'Constraint',
+        //     ruleGroup: 'Palma (cases qty)',
+        //     constraint
+        // }));
+
+        const combinationTablesFromCases = R.flatten(caseSubNodes.map(sn => buildCombinationTableFromCases(sn))).filter(c => c !== undefined);
+        const rulesFromCases = combinationTablesFromCases.map(combination => ({
+            type: 'Combination',
             ruleGroup: 'Palma (cases qty)',
-            constraint
+            combination
         }));
 
         const rulesFromSystemProperties = node.type === 'Root' ? buildCombinationTablesFromSystemProperties(input.configurationIntent.systemProperties) : [];

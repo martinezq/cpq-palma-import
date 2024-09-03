@@ -35,7 +35,6 @@ In this scenario the palma node is flagged as variable=false but has qty propert
 Yes=1
 No=1
 
-
 ### #005 [CLOSED] Qty cases if variable is true
 
 For some reason, the constraint to control the cases is not generated when variable is true. Possibly the case logic should work regardless of variable flag
@@ -47,3 +46,7 @@ Currently qty is allowed to be 0 or controlled by qty attribute. Should be more 
 ### #007 [TESTING] Cases must be represented as combination table as they control more than just the qty
 
 Detected by analyzing: Side sweep-left should be locked to position "left". I don't know how it's in palma yet
+
+### #008 [TESTING] Fix Quantity is not enforced with prune flag
+
+In palma the node is fixed quantity. In Tacton is converted to dynamic with prune attribute to control the value. It doesn't work.

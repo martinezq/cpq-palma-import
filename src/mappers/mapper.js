@@ -23,7 +23,7 @@ const {
     variantName,
     variantNameFromVariant,
     attributeCategoryName,
-    isNodeOptional
+    isNodeVirtuallyOptional
 } = require('./mapper-commons');
 
 // ----------------------------------------------------------------------------
@@ -163,7 +163,7 @@ function extractModules(input) {
 
     function extractModule(m) {
         const nodes = lookupNodesByRealizationUid(m.uid, input.configurationIntent.productStructure);
-        const anyNodeIsOptional = Boolean(nodes.find(({ node, parentNode }) => isNodeOptional(node, parentNode)));
+        const anyNodeIsOptional = Boolean(nodes.find(({ node, parentNode }) => isNodeVirtuallyOptional(node, parentNode)));
 
         let variants = m.variants?.map(v => extractModuleVariant(v, m)) || [];
 

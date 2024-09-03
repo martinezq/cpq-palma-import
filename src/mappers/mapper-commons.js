@@ -139,9 +139,14 @@ function attributeCategoryName(name) {
 
 // ----------------------------------------------------------------------------
 
-function isNodeOptional(node) {
+function isNodeVirtuallyOptional(node) {
     return node.optional || node._optionalInherited;
 }
+
+function isNodeItselfOptional(node) {
+    return node.optional;
+}
+
 
 // ----------------------------------------------------------------------------
 
@@ -166,5 +171,6 @@ module.exports = {
     assemblyToPositionName,
     featureToAttributeName,
     attributeCategoryName,
-    isNodeOptional
+    isNodeVirtuallyOptional,
+    isNodeItselfOptional
 };

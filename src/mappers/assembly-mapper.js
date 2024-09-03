@@ -23,7 +23,8 @@ const {
     attributeName,
     attributeCategoryName,
     assemblyVirtualVariantName,
-    isNodeOptional
+    isNodeVirtuallyOptional,
+    isNodeItselfOptional
 } = require('./mapper-commons');
 
 // ----------------------------------------------------------------------------
@@ -80,7 +81,7 @@ function extractAssemblies(input) {
     function extractPositions(node) {
         
         function extractPositionMinQty(positionNode) {
-            if (isNodeOptional(positionNode) || isNodeVariable(positionNode)) return 0;
+            if (isNodeVirtuallyOptional(positionNode) || isNodeVariable(positionNode)) return 0;
 
             const casesMinQty = positionNode.cases?.map(c => c.quantity).reduce(R.min, 999999);
             if (casesMinQty !== undefined) return casesMinQty;
@@ -492,7 +493,7 @@ function extractAssemblies(input) {
             constraint: buildConstraintForVariableQty(n)
         }));
 
-        const rulesForNoneVariants = node?.nodes?.filter(isModulePositionNode)?.filter(n => isNodeOptional(n, node))?.map(n => ({
+        const rulesForNoneVariants = node?.nodes?.filter(isModulePositionNode)?.filter(n => isNodeVirtuallyOptional(n, node))?.map(n => ({
             type: 'Constraint',
             ruleGroup: 'Palma (none variants)',
             constraint: buildConstraintForNoneVariant(n)
@@ -669,7 +670,7 @@ function hasNodeQtyCases(node) {
 }
 
 function isNodeFixedQty(node) {
-    return !isNodeVariable(node) && !hasNodeQtyCases(node) && !isNodeOptional(node);
+    return !isNodeVariable(node) && !hasNodeQtyCases(node) && !isNodeItselfOptional(node);
 }
 
 

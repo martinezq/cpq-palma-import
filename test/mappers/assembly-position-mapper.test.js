@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import { _test } from '../../src/mappers/assembly-position-mapper.js';
 import {
     extractPositions,
-} from '../../src/mappers/assembly-position-mapper.js'; // Adjust the path as needed
+} from '../../src/mappers/assembly-position-mapper.js';
 
 const { extractPositionMinQty, extractPositionMaxQty } = _test;
 

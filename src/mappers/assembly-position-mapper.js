@@ -29,7 +29,7 @@ export function extractPositions(node, inputIndexed) {
 function extractPositionMinQty(positionNode) {
     if (isNodeOptional(positionNode) || isNodeVariable(positionNode)) return 0;
 
-    if (positionNode.cases.length > 0) {
+    if (positionNode.cases?.length > 0) {
         const casesMinQty = positionNode.cases?.map(c => c.quantity)?.reduce(R.min, 999999);
         if (casesMinQty !== undefined) return casesMinQty;
     }
@@ -40,7 +40,7 @@ function extractPositionMinQty(positionNode) {
 function extractPositionMaxQty(positionNode) {
     if (isNodeVariable(positionNode)) return 999999;
 
-    if (positionNode.cases.length > 0) {
+    if (positionNode.cases?.length > 0) {
         const casesMaxQty = positionNode.cases?.map(c => c.quantity).reduce(R.max, 0);
         if (casesMaxQty !== undefined) return casesMaxQty;
     }

@@ -389,7 +389,7 @@ function extractAssemblies(input) {
                 throw `Can't find qty variable property: ${node.propertyUid}`;
             }
     
-            return `${positionNameFromNode(node)}.qty=0 or ${positionNameFromNode(node)}.qty=${attributeName(qtyProperty.name)}.number`;
+            return `${prune_attribute_name} in {Yes} or ${positionNameFromNode(node)}.qty=${attributeName(qtyProperty.name)}.number`;
         }
     
         function buildConstraintsForOptionality(node) {

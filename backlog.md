@@ -46,6 +46,6 @@ No=1
 
 For some reason, the constraint to control the cases is not generated when variable is true. Possibly the case logic should work regardless of variable flag
 
-### #006 [NEW] Variable Qty should be enforced when prune is No
+### #006 [TESTING] Variable Qty should be enforced when prune is No
 
 Currently qty is allowed to be 0 or controlled by qty attribute. Should be more like this: _prune_attribute in {Yes} or n195_side_broom_position.qty=side_broom_qty_attribute.number

@@ -211,7 +211,7 @@ function extractAssemblies(input) {
         }
 
         function extractAttributesControllingVariablePositions(node) {
-            const childrenVariableNodes = node?.nodes?.filter(isNodeVariable) || [];
+            const childrenVariableNodes = node?.nodes?.filter(isNodeWithVariableQtyProperty) || [];
             
             const variableAttributes = childrenVariableNodes.map(sn => ({
                 name: attributeName(lookupPropertyByUid(sn.qtyPropertyUid).name),
@@ -431,8 +431,15 @@ function extractAssemblies(input) {
             if (node.variable && !qtyProperty) {
                 throw `Can't find qty variable property: ${node.propertyUid}`;
             }
-    
-            return `${prune_attribute_name} in {Yes} or ${positionNameFromNode(node)}.qty=${attributeName(qtyProperty.name)}.number`;
+
+            if (node.variable) {
+                return `${prune_attribute_name} in {Yes} or ${positionNameFromNode(node)}.qty=${attributeName(qtyProperty.name)}.number`;
+            }
+            
+            if (node.optional) {
+                return `${prune_attribute_name} in {Yes} or ${positionNameFromNode(node)}.qty=${attributeName(qtyProperty.name)}`;
+            }
+            
         }
     
         function buildConstraintsForOptionality(node) {
@@ -487,7 +494,7 @@ function extractAssemblies(input) {
             };
         }
 
-        const rulesFromVariablePositions = node?.nodes?.filter(isNodeVariable)?.map(n => ({
+        const rulesFromVariablePositions = node?.nodes?.filter(isNodeWithVariableQtyProperty)?.map(n => ({
             type: 'Constraint',
             ruleGroup: 'Palma (variable qty)',
             constraint: buildConstraintForVariableQty(n)
@@ -662,7 +669,11 @@ function hasProperty(module, propertyUid) {
 }
 
 function isNodeVariable(node) {
-    return node.variable && Boolean(node.qtyPropertyUid)
+    return node.variable && Boolean(node.qtyPropertyUid);
+}
+
+function isNodeWithVariableQtyProperty(node) {
+    return Boolean(node.qtyPropertyUid);
 }
 
 function hasNodeQtyCases(node) {

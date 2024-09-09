@@ -20,7 +20,7 @@ Add constraint to lock qty on X when prune is NO
 
 Fixed, additional constraints are generated, qty works ok
 
-## #003 [NEW] Unifier on qty of module positions (missing in Tacton)
+## #003 [REJECTED] Unifier on qty of module positions (missing in Tacton)
 
 When property is an unifier and is unifying qty's of positions realized by modules, it can't be converted into aggregation (this kind of aggregation is not supported in Tacton)
 
@@ -28,7 +28,9 @@ Options:
 - more attributes (for each module position, one qty attribute in the assembly), constraints linking with qty's, aggregation on attributes
 - more constraints covering for missing aggregation
 
-### #004 [NEW] Qty controlled by boolean property
+I don't remember where it was found, I can't recall any reason to do so. Parking for now
+
+### #004 [TESTING] Qty controlled by boolean property
 
 In this scenario the palma node is flagged as variable=false but has qty property which is of boolean type. Constraint should be generated in this case.
 

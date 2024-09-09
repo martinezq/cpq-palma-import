@@ -393,15 +393,15 @@ function extractAssemblies(input) {
                 return name;
             });
             
-            const rows = node.cases.map(c => buildCombinationFowFromCase(node, c));
+            const rows = node.cases.map(c => buildCombinationRowFromCase(node, c));
     
             return {
                 columns: [`${positionNameFromNode(node)}.Qty`, prune_attribute_name].concat(columns),
-                rows: rows.concat({ values: ['0', 'Yes'].concat(R.times(x => 'unspecified', columns.length - 1))})
+                rows: rows.concat({ values: ['0', 'Yes'].concat(R.times(x => 'unspecified', columns.length))})
             };            
         }
     
-        function buildCombinationFowFromCase(node, c) {
+        function buildCombinationRowFromCase(node, c) {
             const values =
                 R.sortBy(pr => pr.propertyUid, c.propertyRelations || [])
                 .map(pr => {

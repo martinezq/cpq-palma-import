@@ -12,7 +12,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\src\\index.js",
-            "env": { "GRAPHQL_SERVER_URL": "https://cpq-graphql-server.herokuapp.com/promo/" }
+            "env": { "GRAPHQL_SERVER_URL": "https://tacton-cpq-graphql-server-d64a27e6fba8.herokuapp.com/promo/" }
         }
     ]
 }
